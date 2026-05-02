@@ -37,12 +37,14 @@ int main (int argc, char **argv)
 	InicNodo (&nodo);              // inicializa estructura nodo
 	PilaInic (&pila);              // inicializa pila
 	LeerMatriz (argv[2], tsp0);    // lee matriz de fichero
+
+
     InicNodo (&solucion);
     solucion.id = 0;
     TotalNodos--;
     double inicio = clock();
 	
-	activo = !Inconsistente(tsp0);
+	activo = !Inconsistente(tsp0); //checkeo del estado inicial (ONCE ONLY)
 	
 	while (activo)
     {
@@ -54,7 +56,7 @@ int main (int argc, char **argv)
             fflush(stdout);
         }
 
-		Ramifica (&nodo, &lnodo, &rnodo, tsp0);
+		Ramifica (&nodo, &lnodo, &rnodo, tsp0); // Expansión del estado actual,
 		nueva_U = false;
 		if (Solucion(&rnodo)) {
 			if (rnodo.ci < U) {    // se ha encontrado una solucion mejor

@@ -250,7 +250,9 @@ void HijoDch (tNodo *nodo, tNodo *rnodo, int** tsp, tArco arco)
  
 	liberarMatriz(tsp2);
 }
- 
+ /*
+  * Expande un nivel del árbol de búsqueda, tanto hijo izquierdo como derecho (arbol binario)
+  */
 void Ramifica (tNodo *nodo, tNodo *lnodo, tNodo *rnodo, int** tsp0)
 {
   int** tsp = reservarMatrizCuadrada(NCIUDADES);
