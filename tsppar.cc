@@ -112,8 +112,9 @@ int main(int argc, char **argv) {
     TotalNodos--;
 
     MPI_Bcast(tsp[0], NCIUDADES, MPI_INT, 0, MPI_COMM_WORLD);
+
     int size_long, size_int, size_incl, size_dest;
-    MPI_Pack_size(1, MPI_LONG, MPI_COMM_WORLD, &size_long);
+    MPI_Pack_size(1, MPI_LONG, MPI_COMM_WORLD, &size_long); // id
     MPI_Pack_size(2, MPI_INT, MPI_COMM_WORLD, &size_int); // ci y orig_excl
     MPI_Pack_size(NCIUDADES, MPI_INT, MPI_COMM_WORLD, &size_incl);
     MPI_Pack_size(NCIUDADES - 2, MPI_INT, MPI_COMM_WORLD, &size_dest);
@@ -170,17 +171,44 @@ int main(int argc, char **argv) {
         tNodo nuevo_nodo;
         InicNodo(&nuevo_nodo);
         MPI_Unpack(recvbuf, mis_nodos * size_per_nodo, &position_unpack, &nuevo_nodo.id, 1, MPI_LONG, MPI_COMM_WORLD);
+
         MPI_Unpack(recvbuf, mis_nodos * size_per_nodo, &position_unpack, &nuevo_nodo.ci, 1, MPI_INT, MPI_COMM_WORLD);
-        MPI_Unpack(recvbuf, mis_nodos * size_per_nodo, &position_unpack, &nuevo_nodo.orig_excl, 1, MPI_INT, MPI_COMM_WORLD);
-        MPI_Unpack(recvbuf, mis_nodos * size_per_nodo, &position_unpack, nuevo_nodo.incl, NCIUDADES, MPI_INT, MPI_COMM_WORLD);
-        MPI_Unpack(recvbuf, mis_nodos * size_per_nodo, &position_unpack, nuevo_nodo.dest_excl, NCIUDADES - 2, MPI_INT, MPI_COMM_WORLD);
+
+        MPI_Unpack(recvbuf, mis_nodos * size_per_nodo, &position_unpack, &nuevo_nodo.orig_excl, 1, MPI_INT,
+                   MPI_COMM_WORLD);
+
+        MPI_Unpack(recvbuf, mis_nodos * size_per_nodo, &position_unpack, nuevo_nodo.incl, NCIUDADES, MPI_INT,
+                   MPI_COMM_WORLD);
+
+        MPI_Unpack(recvbuf, mis_nodos * size_per_nodo, &position_unpack, nuevo_nodo.dest_excl, NCIUDADES - 2, MPI_INT,
+                   MPI_COMM_WORLD);
 
         PilaPush(&por_procesar, &nuevo_nodo);
     }
 
-    // Limpieza de memoria auxiliar
-    if (rank == 0) delete[] sendbuf;
-    delete[] recvbuf;
-    delete[] sendcounts;
-    delete[] displs;
+    if (rank == 0) {
+        delete[] sendbuf;
+        delete[] recvbuf;
+        delete[] sendcounts;
+        delete[] displs;
+    }
+
+    bool working = true;
+    // processing:
+    while (!PilaVacia(&por_procesar) && working) {
+        // procesamiento habitual
+
+        // checkear si hay updates del top 10
+            // mod el top 10 si hay updates
+
+        // contrastar con el top 10
+            // si es mejor que el CS, entonces update local y aviso global
+
+        // checkear por work requests.
+            // si hay, PilaDivide() y se purga la segunda pila para enviarlos en MPI_Isend()
+
+        // Si la pila está vacia, entonces hacer requests a otros procesos para recibir más trabajo.
+    }
+
+
 }
