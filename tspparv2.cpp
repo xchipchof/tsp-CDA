@@ -20,14 +20,20 @@
 using namespace std;
 
 tNodo *update_top_ten(const tNodo *newBest, tNodo ranking[10]) {
-    int new_pos = 0;
+    int new_pos = -1;
     for (int i = 0; i < 10; i++) {
         if (ranking[i].ci > newBest->ci) {
             new_pos = i;
-        } else
+        } else {
             break;
+        }
     }
-    ranking[new_pos] = *newBest;
+    if (new_pos != -1) {
+        for (int i = 0; i < new_pos; i++) {
+            ranking[i] = ranking[i+1];
+        }
+        ranking[new_pos] = *newBest;
+    }
     return &ranking[0];
 }
 
@@ -200,10 +206,10 @@ static void run_master(const int N, int **tsp) {
             }
 
 
-            // Se envia un nodo al worker que no tenga trabajo
-            // (se solapa porque el worker tenía dos tareas, una que está procesando
-            // y otra que está esperando)
-            isend_node_to_worker(w, &nodo_a_enviar, buf_size, canal_envio_buffers_1[w], &reqs_canal_1[w]);
+
+
+
+
             worker_busy[w]++;
             trabajadores_activos++;
         }
