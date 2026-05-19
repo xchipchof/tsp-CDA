@@ -9,7 +9,6 @@
 #include <mpi.h>
 #include <cstdio>
 #include <cstdlib>
-#include <cstring>
 
 // ---- Tags ----
 #define TAG_WORK      10  // master -> worker : nodos de trabajo (PACKED)

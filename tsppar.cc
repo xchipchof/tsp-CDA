@@ -148,12 +148,12 @@ void recv_and_update_top_ten(tNodo ranking[10], int rank_emisor) {
 void solicitar_trabajo_a_otros(int rank, int N, tPila *pila, bool *working) {
     int target = (rank + 1) % N; // Preguntamos al proceso de al lado (anillo)
     int peticion_vacia = 1;
+    MPI_Request peticion_trabajo;
 
-    // 1. Mandamos la señal de que queremos trabajo
     MPI_Send(&peticion_vacia, 1, MPI_INT, target, TAG_PETICION, MPI_COMM_WORLD);
 
     int num_nodos_recibidos = 0;
-    // 2. Esperamos la respuesta de la cantidad de nodos
+    // Esperamos la respuesta de la cantidad de nodos
     MPI_Recv(&num_nodos_recibidos, 1, MPI_INT, target, TAG_PETICION, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
     if (num_nodos_recibidos > 0) {
@@ -173,9 +173,6 @@ void solicitar_trabajo_a_otros(int rank, int N, tPila *pila, bool *working) {
         }
         delete[] recvbuf;
     } else {
-        // Si nos responden con 0 nodos, significa que tampoco tienen trabajo o no pueden donar.
-        // Implementación Mockup: detenemos la ejecución.
-        // En una implementación robusta, aquí va un algoritmo de terminación distribuida (e.g. anillo de Dijkstra).
         *working = false;
     }
 }
@@ -305,7 +302,6 @@ int main(int argc, char **argv) {
         // checkear si hay updates del top 10
         // mod el top 10 si hay updates
         int hay_nueva_solucion;
-        MPI_Iprobe(MPI_ANY_SOURCE, TAG_SOLUCION, MPI_COMM_WORLD, &hay_nueva_solucion, MPI_STATUS_IGNORE);
         if (hay_nueva_solucion) {
             tNodo nuevo_nodo;
             InicNodo(&nuevo_nodo);
